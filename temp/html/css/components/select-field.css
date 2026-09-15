@@ -1,0 +1,82 @@
+/* ============================================================
+   select-field — «Шаблон»: подпись + селект с кнопкой-стрелкой.
+
+   Нативная стрелка браузера спрятана (appearance: none), вместо неё
+   рисуется свой блок; он не перехватывает клики, поэтому селект
+   раскрывается при клике по любой части поля.
+   ============================================================ */
+
+.select-field {
+  margin-bottom: 24px;
+}
+
+.select-field__label {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-meta);
+}
+
+.select-field__control {
+  position: relative;
+  display: block;
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-field);
+}
+
+.select-field__select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  /* высота и кнопка со стрелкой — те же токены, что у полей параметров,
+     чтобы селект стоял с ними в одну линейку */
+  height: var(--control-height);
+  padding: 0 calc(var(--control-btn-size) + 10px) 0 12px;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-serif);
+  font-size: 16px; /* как у подписей параметров */
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.select-field__select:focus {
+  outline: none;
+}
+
+.select-field__control:focus-within {
+  outline: 2px solid var(--color-attacker);
+  outline-offset: 2px;
+}
+
+/* Квадратная «кнопка» со стрелкой справа */
+.select-field__arrow {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--control-btn-size);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--color-control);
+  border-left: 1px solid var(--color-border-strong);
+  color: var(--color-text-muted);
+  font-size: 10px;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .select-field {
+    margin-bottom: 18px;
+  }
+
+  .select-field__select {
+    font-size: 15px; /* как у подписей параметров на мобильных */
+  }
+}

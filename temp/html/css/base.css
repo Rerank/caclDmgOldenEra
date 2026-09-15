@@ -1,0 +1,73 @@
+/* ============================================================
+   Базовый слой: сброс, страница, общие правила.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 360px;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-serif);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+h1, h2, h3, p, figure {
+  margin: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: var(--color-attacker);
+}
+
+a:hover {
+  color: var(--color-link-hover);
+}
+
+/* Единая подсветка фокуса с клавиатуры для всех интерактивных элементов */
+:focus-visible {
+  outline: 2px solid var(--color-attacker);
+  outline-offset: 2px;
+}
+
+/* Ограничитель ширины страницы */
+.page__inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--page-padding) var(--page-padding) 40px;
+}
+
+/* Когда раскладка становится одноколоночной, содержимое не растягиваем
+   на всю ширину планшета — иначе подписи и поля расходятся по краям */
+@media (max-width: 900px) {
+  .page__inner {
+    max-width: 560px;
+  }
+}

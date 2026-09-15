@@ -1,0 +1,62 @@
+/* ============================================================
+   hero-panel — компактный блок параметров героя над панелью юнита.
+   Атака и защита героя суммируются с параметрами существа, поэтому
+   вводятся отдельно и один раз на сторону.
+
+   Поля мельче основных: значения героя почти всегда двузначные,
+   а два поля должны уместиться в одну строку внутри узкой колонки.
+   ============================================================ */
+
+.hero-panel {
+  /* локальные токены управления — переопределяют глобальные
+     только внутри этого блока */
+  --control-height: 26px;
+  --control-btn-size: 26px;
+  --stepper-input-width: 40px;
+  --stepper-gap: 4px;
+
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-shadow);
+  padding: 12px var(--panel-padding-x);
+  margin-bottom: calc(var(--shadow-offset) + 10px);
+}
+
+.hero-panel__label {
+  display: block;
+  margin-bottom: 9px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-meta);
+}
+
+/* Два поля в строку, пока помещаются; иначе переносятся сами —
+   отдельный медиазапрос для этого не нужен */
+.hero-panel__params {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--row-gap) 14px;
+}
+
+.hero-panel__params > .param-row {
+  flex: 1 1 150px;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .hero-panel {
+    /* на мобильных поля всё равно встают друг под друга —
+       возвращаем им обычный размер, удобный для пальца */
+    --control-height: 28px;
+    --control-btn-size: 28px;
+    --stepper-input-width: 52px;
+
+    padding: 10px var(--panel-padding-x);
+  }
+
+  .hero-panel__label {
+    margin-bottom: 7px;
+  }
+}
