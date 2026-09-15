@@ -6,9 +6,6 @@ import { t } from '../i18n'
 /** «7–9», но «7», если min и max совпали. */
 const range = (min: number, max: number) => (min === max ? `${min}` : `${min}–${max}`)
 
-/** «10+4», если герой что-то прибавляет, иначе просто «10». */
-const withHero = (base: number, hero: number) => (hero > 0 ? `${base}+${hero}` : `${base}`)
-
 const templateName = (id: string) => {
   const template = CREATURE_TEMPLATES.find((item) => item.id === id)
   return template ? (t.creatures[template.nameKey] ?? template.nameKey) : id
@@ -33,9 +30,11 @@ export function formatBreakdown(
     `${range(strike.countMin, strike.countMax)} ${t.pcs}` +
       ` × ${range(striker.damageMin, striker.damageMax)} ${t.damageGenitive}` +
       ` × (${RULES.base} + ${strike.attack}) / (${RULES.base} + ${strike.defense})`,
-    `${t.outgoingShort} ${striker.outgoing}%`,
-    `${t.incomingShort} ${receiver.incoming}%`,
   ]
+
+  // нулевые проценты на урон не влияют — в строке от них только шум
+  if (striker.outgoing > 0) parts.push(`${t.outgoingShort} ${striker.outgoing}%`)
+  if (receiver.incoming > 0) parts.push(`${t.incomingShort} ${receiver.incoming}%`)
 
   if (hexes !== null) {
     // штраф показываем, только когда он есть: «дистанция 2» против «дистанция 5 (−20%)»
@@ -48,20 +47,24 @@ export function formatBreakdown(
 
 /**
  * Слепок существа: с какими параметрами закреплённый результат был посчитан.
- * «Свой · HP 35 · атака 10+4 · защ. 12+3 · урон 7–9 · 10 шт · исх. +25% · вх. −0%»
+ * «Свой · HP 35 · атака 14 · защ. 15 · урон 7–9 · 10 шт · исх. +25% · вх. −0%»
  *
- * Параметры показаны так же, как они стояли в панели, а бонус героя приписан
- * отдельным слагаемым — иначе после ручного ввода не понять, откуда число.
+ * Атака и защита — итоговые, с бонусом героя: ровно те числа, что видно
+ * в панели и в расшифровке.
  */
 export function formatSnapshot(side: Side): string {
-  return [
+  const parts = [
     templateName(side.templateId),
     `${t.hpShort} ${side.hp}`,
-    `${t.attackShort} ${withHero(side.attack, side.heroAttack)}`,
-    `${t.defenseShort} ${withHero(side.defense, side.heroDefense)}`,
+    `${t.attackShort} ${side.attack + side.heroAttack}`,
+    `${t.defenseShort} ${side.defense + side.heroDefense}`,
     `${t.damageShort} ${range(side.damageMin, side.damageMax)}`,
     `${side.count} ${t.pcs}`,
-    `${t.outgoingSnapshot} +${side.outgoing}%`,
-    `${t.incomingSnapshot} −${side.incoming}%`,
-  ].join(' · ')
+  ]
+
+  // нулевые бонусы не показываем: слепок и так длинный
+  if (side.outgoing > 0) parts.push(`${t.outgoingSnapshot} +${side.outgoing}%`)
+  if (side.incoming > 0) parts.push(`${t.incomingSnapshot} −${side.incoming}%`)
+
+  return parts.join(' · ')
 }
