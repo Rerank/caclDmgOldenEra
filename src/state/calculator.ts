@@ -43,6 +43,15 @@ export function useCalculator() {
     patchAttack: (patch: Partial<Pick<Input, 'ranged' | 'hexes'>>) =>
       setInput((current) => ({ ...current, ...patch })),
 
+    // Меняются местами стороны целиком, вместе с героями. Дистанционная атака
+    // и гексы остаются на месте: это свойства удара, а не существа.
+    swap: () =>
+      setInput((current) => ({
+        ...current,
+        attacker: current.defender,
+        defender: current.attacker,
+      })),
+
     // Слепок параметров снимается прямо здесь: дальше форму можно править,
     // а результат останется тем, с которым его посчитали.
     strike: () =>

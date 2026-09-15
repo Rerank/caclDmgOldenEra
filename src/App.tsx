@@ -11,7 +11,7 @@ import { useCalculator } from './state/calculator'
 import './battle.css'
 
 export function App() {
-  const { input, fresh, pinned, patchSide, patchAttack, strike, pin, unpin } = useCalculator()
+  const { input, fresh, pinned, patchSide, patchAttack, swap, strike, pin, unpin } = useCalculator()
 
   return (
     <div className="page__inner">
@@ -33,7 +33,7 @@ export function App() {
         />
 
         <div className="battle__swap">
-          <IconButton icon={swapIcon} label={t.swapSides} />
+          <IconButton icon={swapIcon} label={t.swapSides} onClick={swap} />
         </div>
 
         <UnitSide
