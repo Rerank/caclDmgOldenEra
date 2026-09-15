@@ -1,7 +1,12 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+
+// Глобальный слой стилей: токены и сброс. Стили компонентов импортируют
+// сами компоненты — по файлу на компонент, рядом с ним.
+import './styles/variables.css'
+import './styles/base.css'
+
+import { App } from './App'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

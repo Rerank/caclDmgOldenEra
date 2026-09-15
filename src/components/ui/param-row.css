@@ -1,0 +1,37 @@
+/* ============================================================
+   param-row — строка параметра: подпись слева, управление справа.
+   Управлением может быть stepper или toggle.
+   ============================================================ */
+
+.param-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: var(--control-height);
+}
+
+.param-row__label {
+  font-size: 16px;
+  color: var(--color-text-label);
+  cursor: default;
+}
+
+/* Нижний индекс min/max у подписи «Урон» */
+.param-row__sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-meta);
+  vertical-align: sub;
+  margin-left: 1px;
+}
+
+@media (max-width: 600px) {
+  .param-row {
+    gap: 8px;
+  }
+
+  .param-row__label {
+    font-size: 15px;
+  }
+}

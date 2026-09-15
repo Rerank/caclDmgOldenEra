@@ -1,0 +1,80 @@
+/* ============================================================
+   disclosure — сворачиваемый блок: строка-переключатель и тело.
+   Используется и для дополнительных параметров юнита, и для
+   расшифровки формулы в карточке результата.
+
+   Построен на нативных <details>/<summary>: раскрытие и доступность
+   с клавиатуры работают без JS, состояние живёт в атрибуте open.
+   В React это будет один компонент с props `label`, `marked`, `open`.
+   ============================================================ */
+
+.disclosure__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 0;
+
+  /* убираем стандартный треугольник браузера */
+  list-style: none;
+
+  cursor: pointer;
+  user-select: none;
+
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-meta);
+  transition: color 0.12s ease;
+}
+
+/* тот же маркер в Safari */
+.disclosure__toggle::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure__toggle:hover {
+  color: var(--side-accent, var(--color-attacker));
+}
+
+.disclosure__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Квадратная точка: внутри есть значения, отличные от значений
+   по умолчанию. Признак булев — включается модификатором блока. */
+.disclosure__marker {
+  display: none;
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  background-color: var(--side-accent, var(--color-attacker));
+}
+
+.disclosure--marked .disclosure__marker {
+  display: block;
+}
+
+.disclosure__chevron {
+  font-size: 10px;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+
+.disclosure[open] .disclosure__chevron {
+  transform: rotate(180deg);
+}
+
+/* раскладку содержимого задаёт вложенный блок, здесь только отбивка */
+.disclosure__body {
+  padding-top: 14px;
+}
+
+@media (max-width: 600px) {
+  .disclosure__body {
+    padding-top: 12px;
+  }
+}

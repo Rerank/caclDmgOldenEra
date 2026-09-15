@@ -1,0 +1,239 @@
+/* ============================================================
+   result-panel — нижняя панель «Итог».
+   Внутри: result-card (одна карточка результата) и
+           result-table (таблица мин/макс/сред).
+   ============================================================ */
+
+/* Стопка результатов: свежий сверху, закреплённые под ним */
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-top: 28px;
+}
+
+.result-panel {
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-shadow);
+}
+
+.result-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.result-panel__title {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--color-text-muted);
+}
+
+.result-panel__body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ─────────────  Карточка результата  ───────────── */
+
+.result-card {
+  min-width: 0;
+  padding: 20px;
+}
+
+/* вертикальный разделитель между карточками */
+.result-card + .result-card {
+  border-left: 1px solid var(--color-divider);
+}
+
+/* Слепок параметров, с которыми посчитан закреплённый результат.
+   Есть только у .result-panel--pinned */
+.result-card__snapshot {
+  /* две строки: при коротком и длинном имени шаблона заголовки
+     соседних карточек всё равно встают на одну линию */
+  min-height: 3em;
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  /* строка длинная — набираем её плотнее остальных служебных подписей */
+  letter-spacing: -0.02em;
+  color: var(--color-text-meta);
+}
+
+.result-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.result-card__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.result-card__title {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+/* Сторона результата задаёт акцент: заголовок, «средние» значения,
+   ховер переключателя расшифровки */
+.result-card--counter { --side-accent: var(--color-defender); }
+.result-card--strike  { --side-accent: var(--color-attacker); }
+
+.result-card__title {
+  color: var(--side-accent);
+}
+
+/* Сворачиваемая расшифровка формулы под таблицей */
+.result-card__formula {
+  margin-top: 14px;
+}
+
+.result-card__breakdown {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--color-text-meta);
+}
+
+/* ─────────────  Таблица результата  ───────────── */
+
+.result-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.result-table__col-label {
+  width: 38%;
+}
+
+.result-table__corner,
+.result-table__head {
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--color-divider-dot);
+}
+
+.result-table__head {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  text-align: right;
+  letter-spacing: 0.06em;
+  color: var(--color-text-meta);
+}
+
+.result-table__label,
+.result-table__value {
+  padding: 9px 0;
+  border-bottom: 1px dotted var(--color-divider-dot);
+}
+
+.result-table__label {
+  font-size: 16px;
+  font-weight: 400;
+  text-align: left;
+  color: var(--color-text-label);
+}
+
+.result-table__value {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  text-align: right;
+  color: var(--color-text-number);
+  white-space: nowrap;
+}
+
+/* Колонка «сред» — акцентная. Цвет задан здесь, после общего правила
+   .result-table__value, иначе то перебило бы его по порядку в файле */
+.result-table__value--avg {
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--side-accent);
+}
+
+/* ─────────────  Адаптив  ───────────── */
+
+@media (max-width: 900px) {
+  .result-panel__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* на мобилке карточки идут друг под другом — разделитель горизонтальный */
+  .result-card + .result-card {
+    border-left: 0;
+    border-top: 1px solid var(--color-divider);
+  }
+
+  /* карточки в столбик — выравнивать слепки не с чем,
+     резерв под вторую строку только добавил бы пустоту */
+  .result-card__snapshot {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .results {
+    gap: 22px;
+    margin-top: 22px;
+  }
+
+  .result-panel__header {
+    padding: 12px 14px;
+  }
+
+  .result-panel__title {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+  }
+
+  .result-card {
+    padding: 16px 14px;
+  }
+
+  .result-card__header {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .result-card__title {
+    font-size: 17px;
+  }
+
+  .result-table__col-label {
+    width: 34%;
+  }
+
+  .result-table__label {
+    font-size: 14px;
+    padding: 8px 0;
+  }
+
+  .result-table__value {
+    font-size: 16px;
+    padding: 8px 0;
+  }
+
+  .result-table__value--avg {
+    font-size: 17px;
+  }
+
+  .result-table__head {
+    font-size: 11px;
+  }
+
+  .result-card__breakdown {
+    font-size: 11px;
+  }
+}

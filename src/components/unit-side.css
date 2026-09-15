@@ -1,0 +1,72 @@
+/* ============================================================
+   unit-side  — сторона боя: заголовок с иконкой + панель параметров.
+   unit-panel — сама «бумажная» панель.
+   ============================================================ */
+
+.unit-side {
+  min-width: 0;
+}
+
+.unit-side__header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: var(--side-header-height);
+}
+
+.unit-side__icon {
+  width: 29px;
+  height: 29px;
+  flex-shrink: 0;
+}
+
+.unit-side__title {
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  line-height: 1.2;
+  color: var(--side-accent);
+}
+
+/* Цвет стороны: красный — атакующий, синий — защищающийся.
+   Через переменную его подхватывают вложенные элементы (маркер и т.п.) */
+.unit-side--attacker { --side-accent: var(--color-attacker); }
+.unit-side--defender { --side-accent: var(--color-defender); }
+
+/* ─────────────  Панель параметров  ───────────── */
+
+.unit-panel {
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-shadow);
+  padding: var(--panel-padding-y) var(--panel-padding-x);
+}
+
+.unit-panel__params {
+  display: flex;
+  flex-direction: column;
+  gap: var(--row-gap);
+}
+
+.unit-panel__divider {
+  height: 0;
+  border: 0;
+  border-top: 1px solid var(--color-divider);
+  margin: 14px 0;
+}
+
+@media (max-width: 600px) {
+  .unit-side__header {
+    gap: 10px;
+  }
+
+  .unit-side__title {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+  }
+
+  .unit-panel__divider {
+    margin: 12px 0;
+  }
+}
