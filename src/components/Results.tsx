@@ -70,7 +70,10 @@ type EntryPanelProps = {
 /**
  * Одна панель результата. Разворачивает запись в две карточки: ответный удар
  * описывает, что случилось с атакующим, удар по защищающемуся — что случилось
- * с защищающимся. Цвет карточки и её слепок — той стороны, которая бьёт.
+ * с защищающимся.
+ *
+ * Цвет карточки — стороны, которая бьёт. А слепок и таблица — стороны, которая
+ * получает: карточка стоит под её панелью, и там же ждёшь увидеть её параметры.
  */
 function EntryPanel({ entry, title, action, pinned, entering, leaving }: EntryPanelProps) {
   const { input, result } = entry
@@ -90,7 +93,7 @@ function EntryPanel({ entry, title, action, pinned, entering, leaving }: EntryPa
           variant="counter"
           strike={result.counter}
           maxHp={input.attacker.hp}
-          snapshot={pinned ? formatSnapshot(input.defender) : undefined}
+          snapshot={pinned ? formatSnapshot(input.attacker) : undefined}
           breakdown={formatBreakdown(result.counter, input.defender, input.attacker, null)}
         />
       )}
@@ -99,7 +102,7 @@ function EntryPanel({ entry, title, action, pinned, entering, leaving }: EntryPa
         variant="strike"
         strike={result.strike}
         maxHp={input.defender.hp}
-        snapshot={pinned ? formatSnapshot(input.attacker) : undefined}
+        snapshot={pinned ? formatSnapshot(input.defender) : undefined}
         breakdown={formatBreakdown(result.strike, input.attacker, input.defender, hexes)}
       />
     </ResultPanel>

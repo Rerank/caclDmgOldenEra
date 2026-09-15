@@ -19,9 +19,20 @@ type Props = {
   extra?: ReactNode
 }
 
-/** Подсказка «10 + 4 = 14»: в поле лежит своё значение существа, герой прибавляется сверху. */
-const sumHint = (base: number, hero: number) =>
-  hero > 0 ? `${base} + ${hero} = ${base + hero}` : undefined
+/**
+ * Поле показывает итоговый параметр — вместе с бонусом героя, ровно то число,
+ * которое уходит в расчёт. Редактируется тоже итог, поэтому границы сдвинуты
+ * на бонус: собственное значение существа при любом вводе остаётся в своих
+ * пределах, а «−» гаснет там, где от существа уже ничего не осталось.
+ */
+const withHero = (own: number, hero: number, limits: { min: number; max: number; step: number }) => ({
+  value: own + hero,
+  min: limits.min + hero,
+  max: limits.max + hero,
+  step: limits.step,
+  boosted: hero > 0,
+  title: hero > 0 ? `${own} + ${hero} = ${own + hero}` : undefined,
+})
 
 /**
  * Сторона боя. Компонент один на обе: различаются только иконка, заголовок,
@@ -63,20 +74,14 @@ export function UnitSide({ role, side, onChange, extra }: Props) {
           <NumberField
             id={`${role}-attack`}
             label={t.attack}
-            value={side.attack}
-            {...F.attack}
-            boosted={side.heroAttack > 0}
-            title={sumHint(side.attack, side.heroAttack)}
-            onChange={(attack) => onChange({ attack })}
+            {...withHero(side.attack, side.heroAttack, F.attack)}
+            onChange={(total) => onChange({ attack: total - side.heroAttack })}
           />
           <NumberField
             id={`${role}-defense`}
             label={t.defense}
-            value={side.defense}
-            {...F.defense}
-            boosted={side.heroDefense > 0}
-            title={sumHint(side.defense, side.heroDefense)}
-            onChange={(defense) => onChange({ defense })}
+            {...withHero(side.defense, side.heroDefense, F.defense)}
+            onChange={(total) => onChange({ defense: total - side.heroDefense })}
           />
           <NumberField
             id={`${role}-damage-min`}
