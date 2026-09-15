@@ -18,6 +18,40 @@
   box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-shadow);
 }
 
+/* Панель только что появилась — единственный случай, это новый расчёт.
+   Закрепление и открепление панель лишь переставляют, и анимации там нет. */
+.result-panel--entering {
+  animation: result-panel-in var(--result-anim) ease-out;
+}
+
+/* Панель уже убрали из стопки, но она ещё занимает место и доигрывает уход */
+.result-panel--leaving {
+  animation: result-panel-out var(--result-anim) ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes result-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes result-panel-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+/* Уважаем системную настройку «меньше движения» */
+@media (prefers-reduced-motion: reduce) {
+  .result-panel--entering,
+  .result-panel--leaving {
+    animation-duration: 1ms;
+  }
+}
+
 .result-panel__header {
   display: flex;
   align-items: center;
