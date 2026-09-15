@@ -55,7 +55,8 @@ export function formatBreakdown(
 export function formatSnapshot(side: Side): string {
   const parts = [
     templateName(side.templateId),
-    `${t.hpShort} ${side.hp}`,
+    // «HP 4/10» у раненого стека, просто «HP 10» у целого
+    `${t.hpShort} ${side.topHp < side.hp ? `${side.topHp}/${side.hp}` : side.hp}`,
     `${t.attackShort} ${side.attack + side.heroAttack}`,
     `${t.defenseShort} ${side.defense + side.heroDefense}`,
     `${t.damageShort} ${range(side.damageMin, side.damageMax)}`,

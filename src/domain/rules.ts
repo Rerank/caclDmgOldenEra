@@ -27,6 +27,8 @@ export const RULES = {
  */
 export const F = {
   hp: { min: 1, max: 9999, step: 1 },
+  /** верхнюю границу задаёт hp стороны, поэтому здесь только минимум */
+  topHp: { min: 1, max: 9999, step: 1 },
   attack: { min: 0, max: 99, step: 1 },
   defense: { min: 0, max: 99, step: 1 },
   damage: { min: 0, max: 9999, step: 1 },
@@ -42,6 +44,7 @@ export const DEFAULT_INPUT: Input = {
   attacker: {
     templateId: 'custom',
     hp: 35,
+    topHp: 35,
     attack: 10,
     defense: 12,
     damageMin: 7,
@@ -55,6 +58,7 @@ export const DEFAULT_INPUT: Input = {
   defender: {
     templateId: 'custom',
     hp: 25,
+    topHp: 25,
     attack: 8,
     defense: 8,
     damageMin: 3,

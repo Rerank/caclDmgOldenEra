@@ -29,39 +29,53 @@ export function rangePenalty(ranged: boolean, hexes: number): number {
 
 /**
  * Поправка на ошибку представления. Цепочка множителей считается в double,
- * и там, где математически выходит ровное число, в double получается чуть
- * меньше: 10 × 8 × 30/28 × 0.7 — это ровно 60, но в double 59.999999999999993,
- * и честный floor превратил бы 60 в 59. Величина заведомо больше погрешности
- * double на наших числах и заведомо меньше единицы урона.
+ * поэтому значение, которое математически ровно попадает на половину,
+ * может оказаться чуть ниже неё — и округлиться не в ту сторону.
+ * Величина заведомо больше погрешности double на наших числах
+ * и заведомо меньше единицы урона.
  */
 const EPSILON = 1e-6
 
 /**
- * Урон одной ветки. Округление — вниз и ровно один раз, в самом конце:
+ * Урон одной ветки. Округление — к ближайшему и ровно один раз, в самом конце:
  * округления на промежуточных шагах накапливали бы ошибку.
+ *
+ * Правило округления в гайде не описано, выведено сверкой с игрой:
+ * 4 × 5–9 против защиты 5 — это 23.2 и 41.76, а игра показывает 23 и 42.
+ *
  * Минимум в 1 единицу — правило игры, но только если бить есть чем.
  */
 function damageOf(count: number, perCreature: number, multiplier: number): number {
   const raw = count * perCreature * multiplier
   if (raw <= 0) return 0
-  return Math.max(RULES.minDamage, Math.floor(raw + EPSILON))
+  return Math.max(RULES.minDamage, Math.round(raw + EPSILON))
 }
 
-/** Раскладывает урон по стеку: кто погиб, кто уцелел и с каким здоровьем верхний. */
-function applyToStack(damage: number, hp: number, count: number): Outcome {
-  if (damage >= hp * count) {
+/**
+ * Раскладывает урон по стеку: кто погиб, кто уцелел и с каким здоровьем верхний.
+ * Урон сначала добивает верхнее существо — оно могло прийти в бой уже раненым, —
+ * и только потом принимается за целые.
+ */
+function applyToStack(damage: number, hp: number, count: number, topHp: number): Outcome {
+  if (damage >= topHp + (count - 1) * hp) {
     return { damage, killed: count, survived: 0, topHp: 0 }
   }
 
-  const killed = Math.floor(damage / hp)
-  const rest = damage % hp
+  if (damage < topHp) {
+    return { damage, killed: 0, survived: count, topHp: topHp - damage }
+  }
+
+  // верхнее добито, остаток снимаем с целых
+  const rest = damage - topHp
+  const killed = 1 + Math.floor(rest / hp)
+  const tail = rest % hp
 
   return {
     damage,
     killed,
     survived: count - killed,
-    // остаток снимается с верхнего выжившего; без остатка он невредим
-    topHp: rest === 0 ? hp : hp - rest,
+    // без остатка следующее существо невредимо
+    topHp: tail === 0 ? hp : hp - tail,
   }
 }
 
@@ -86,7 +100,12 @@ function buildStrike(
     (1 - penaltyPercent / 100)
 
   const branch = (count: number, perCreature: number) =>
-    applyToStack(damageOf(count, perCreature, multiplier), receiver.hp, receiver.count)
+    applyToStack(
+      damageOf(count, perCreature, multiplier),
+      receiver.hp,
+      receiver.count,
+      receiver.topHp,
+    )
 
   return {
     min: branch(counts.min, striker.damageMin),

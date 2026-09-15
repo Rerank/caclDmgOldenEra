@@ -2,10 +2,10 @@ import type { ReactNode } from 'react'
 import './param-row.css'
 
 type Props = {
-  label: ReactNode
+  label: string
   /** id управляющего элемента — чтобы подпись кликалась */
   htmlFor?: string
-  /** управление: stepper или toggle */
+  /** управление: степпер, тумблер или пара полей */
   children: ReactNode
 }
 

@@ -8,6 +8,7 @@ import { HeroPanel } from './HeroPanel'
 import { TemplateField } from './TemplateField'
 import { Disclosure } from './ui/Disclosure'
 import { NumberField } from './ui/NumberField'
+import { PairField } from './ui/PairField'
 import './unit-side.css'
 
 type Props = {
@@ -64,12 +65,34 @@ export function UnitSide({ role, side, onChange, extra }: Props) {
         />
 
         <div className="unit-panel__params">
-          <NumberField
-            id={`${role}-hp`}
+          {/* здоровье верхнего, ещё не добитого существа, и максимальное */}
+          <PairField
             label={t.hp}
-            value={side.hp}
-            {...F.hp}
-            onChange={(hp) => onChange({ hp })}
+            separator="/"
+            jumpKey="/"
+            left={{
+              id: `${role}-top-hp`,
+              label: t.hpCurrent,
+              value: side.topHp,
+              min: F.topHp.min,
+              max: side.hp,
+              onChange: (topHp) => onChange({ topHp }),
+            }}
+            right={{
+              id: `${role}-hp`,
+              label: t.hpMax,
+              value: side.hp,
+              min: F.hp.min,
+              max: F.hp.max,
+              onChange: (hp) => onChange({ hp }),
+            }}
+          />
+          <NumberField
+            id={`${role}-count`}
+            label={t.count}
+            value={side.count}
+            {...F.count}
+            onChange={(count) => onChange({ count })}
           />
           <NumberField
             id={`${role}-attack`}
@@ -83,28 +106,26 @@ export function UnitSide({ role, side, onChange, extra }: Props) {
             {...withHero(side.defense, side.heroDefense, F.defense)}
             onChange={(total) => onChange({ defense: total - side.heroDefense })}
           />
-          <NumberField
-            id={`${role}-damage-min`}
+          <PairField
             label={t.damage}
-            sub={t.damageMin}
-            value={side.damageMin}
-            {...F.damage}
-            onChange={(damageMin) => onChange({ damageMin })}
-          />
-          <NumberField
-            id={`${role}-damage-max`}
-            label={t.damage}
-            sub={t.damageMax}
-            value={side.damageMax}
-            {...F.damage}
-            onChange={(damageMax) => onChange({ damageMax })}
-          />
-          <NumberField
-            id={`${role}-count`}
-            label={t.count}
-            value={side.count}
-            {...F.count}
-            onChange={(count) => onChange({ count })}
+            separator="–"
+            jumpKey="-"
+            left={{
+              id: `${role}-damage-min`,
+              label: t.damageMin,
+              value: side.damageMin,
+              min: F.damage.min,
+              max: F.damage.max,
+              onChange: (damageMin) => onChange({ damageMin }),
+            }}
+            right={{
+              id: `${role}-damage-max`,
+              label: t.damageMax,
+              value: side.damageMax,
+              min: F.damage.min,
+              max: F.damage.max,
+              onChange: (damageMax) => onChange({ damageMax }),
+            }}
           />
           {extra}
         </div>

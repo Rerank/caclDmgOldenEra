@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { t } from '../../i18n'
+import { clamp, useNumberInput } from './useNumberInput'
 import './stepper.css'
 
 export type StepperProps = {
@@ -20,8 +20,6 @@ export type StepperProps = {
   title?: string
 }
 
-const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
-
 export function Stepper({
   id,
   value,
@@ -35,25 +33,7 @@ export function Stepper({
   boosted,
   title,
 }: StepperProps) {
-  // Пока поле редактируют, показываем ровно набранное. Иначе его нельзя
-  // очистить, чтобы ввести число заново: React тут же вернул бы прежнее.
-  const [draft, setDraft] = useState<string | null>(null)
-
-  const handleType = (raw: string) => {
-    const digits = raw.replace(/\D/g, '')
-    setDraft(digits)
-    // наверх отдаём только то, что уже укладывается в границы
-    const n = Number.parseInt(digits, 10)
-    if (!Number.isNaN(n) && n >= min && n <= max) onChange(n)
-  }
-
-  // На blur добираем остальное: «99999» зажимаем в max, пустое поле
-  // возвращает прежнее значение
-  const handleBlur = () => {
-    const n = Number.parseInt(draft ?? '', 10)
-    if (!Number.isNaN(n)) onChange(clamp(n, min, max))
-    setDraft(null)
-  }
+  const input = useNumberInput({ value, min, max, onChange })
 
   const fieldCls = 'stepper__field' + (sign || unit ? ' stepper__field--with-unit' : '')
   const inputCls = 'stepper__input' + (boosted ? ' stepper__input--boosted' : '')
@@ -72,16 +52,7 @@ export function Stepper({
 
       <div className={fieldCls}>
         {sign && <span className="stepper__sign">{sign}</span>}
-        <input
-          className={inputCls}
-          id={id}
-          type="text"
-          inputMode="numeric"
-          title={title}
-          value={draft ?? String(value)}
-          onChange={(e) => handleType(e.target.value)}
-          onBlur={handleBlur}
-        />
+        <input className={inputCls} id={id} title={title} {...input} />
         {unit && <span className="stepper__unit">{unit}</span>}
       </div>
 

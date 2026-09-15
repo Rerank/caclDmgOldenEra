@@ -12,17 +12,27 @@ export type Role = 'attacker' | 'defender'
 const ANIMATION_MS = 160
 
 /**
- * Урон min не может быть больше урона max. Не блокируем ввод, а подтягиваем
- * соседнее поле: пользователь набирает число, а не борется с валидацией.
+ * Связанные поля. Ввод не блокируем, а подтягиваем соседнее: пользователь
+ * набирает число, а не борется с валидацией.
  */
 function applyToSide(side: Side, patch: Partial<Side>): Side {
   const next = { ...side, ...patch }
 
+  // урон min не может быть больше урона max
   if (patch.damageMin !== undefined && next.damageMin > next.damageMax) {
     next.damageMax = next.damageMin
   }
   if (patch.damageMax !== undefined && next.damageMax < next.damageMin) {
     next.damageMin = next.damageMax
+  }
+
+  // Пока существо цело, текущее здоровье едет за максимальным; раненое —
+  // остаётся как есть, только подрезается сверху
+  if (patch.hp !== undefined) {
+    next.topHp = side.topHp === side.hp ? next.hp : Math.min(next.topHp, next.hp)
+  }
+  if (patch.topHp !== undefined) {
+    next.topHp = Math.min(next.topHp, next.hp)
   }
 
   return next
