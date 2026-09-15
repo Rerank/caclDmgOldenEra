@@ -53,6 +53,14 @@ export const ru = {
   incomingShort: 'умен. вх.',
   distance: 'дистанция',
 
+  // Куски слепка: «Свой · HP 35 · атака 10+4 · … · исх. +25% · вх. −0%»
+  hpShort: 'HP',
+  attackShort: 'атака',
+  defenseShort: 'защ.',
+  damageShort: 'урон',
+  outgoingSnapshot: 'исх.',
+  incomingSnapshot: 'вх.',
+
   colMin: 'мин',
   colMax: 'макс',
   colAvg: 'сред',

@@ -1,8 +1,18 @@
+import { CREATURE_TEMPLATES } from '../data/creatures'
 import { RULES } from '../domain/rules'
 import type { Side, Strike } from '../domain/types'
 import { t } from '../i18n'
 
+/** «7–9», но «7», если min и max совпали. */
 const range = (min: number, max: number) => (min === max ? `${min}` : `${min}–${max}`)
+
+/** «10+4», если герой что-то прибавляет, иначе просто «10». */
+const withHero = (base: number, hero: number) => (hero > 0 ? `${base}+${hero}` : `${base}`)
+
+const templateName = (id: string) => {
+  const template = CREATURE_TEMPLATES.find((item) => item.id === id)
+  return template ? (t.creatures[template.nameKey] ?? template.nameKey) : id
+}
 
 /**
  * Строка под таблицей результата: из чего сложился этот урон.
@@ -34,4 +44,24 @@ export function formatBreakdown(
   }
 
   return parts.join(' · ')
+}
+
+/**
+ * Слепок существа: с какими параметрами закреплённый результат был посчитан.
+ * «Свой · HP 35 · атака 10+4 · защ. 12+3 · урон 7–9 · 10 шт · исх. +25% · вх. −0%»
+ *
+ * Параметры показаны так же, как они стояли в панели, а бонус героя приписан
+ * отдельным слагаемым — иначе после ручного ввода не понять, откуда число.
+ */
+export function formatSnapshot(side: Side): string {
+  return [
+    templateName(side.templateId),
+    `${t.hpShort} ${side.hp}`,
+    `${t.attackShort} ${withHero(side.attack, side.heroAttack)}`,
+    `${t.defenseShort} ${withHero(side.defense, side.heroDefense)}`,
+    `${t.damageShort} ${range(side.damageMin, side.damageMax)}`,
+    `${side.count} ${t.pcs}`,
+    `${t.outgoingSnapshot} +${side.outgoing}%`,
+    `${t.incomingSnapshot} −${side.incoming}%`,
+  ].join(' · ')
 }

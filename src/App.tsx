@@ -11,7 +11,7 @@ import { useCalculator } from './state/calculator'
 import './battle.css'
 
 export function App() {
-  const { input, fresh, patchSide, patchAttack, strike } = useCalculator()
+  const { input, fresh, pinned, patchSide, patchAttack, strike, pin, unpin } = useCalculator()
 
   return (
     <div className="page__inner">
@@ -50,7 +50,7 @@ export function App() {
         </div>
       </main>
 
-      <Results fresh={fresh} />
+      <Results fresh={fresh} pinned={pinned} onPin={pin} onUnpin={unpin} />
     </div>
   )
 }

@@ -30,10 +30,12 @@ function applyToSide(side: Side, patch: Partial<Side>): Side {
 export function useCalculator() {
   const [input, setInput] = useState<Input>(DEFAULT_INPUT)
   const [fresh, setFresh] = useState<Entry | null>(null)
+  const [pinned, setPinned] = useState<Entry[]>([])
 
   return {
     input,
     fresh,
+    pinned,
 
     patchSide: (role: Role, patch: Partial<Side>) =>
       setInput((current) => ({ ...current, [role]: applyToSide(current[role], patch) })),
@@ -49,5 +51,15 @@ export function useCalculator() {
         input: structuredClone(input),
         result: calculate(input),
       }),
+
+    // Закрепить — значит увести свежий результат вниз, в стопку:
+    // новые удары его больше не затрут
+    pin: () => {
+      if (!fresh) return
+      setPinned((current) => [fresh, ...current])
+      setFresh(null)
+    },
+
+    unpin: (id: string) => setPinned((current) => current.filter((entry) => entry.id !== id)),
   }
 }
