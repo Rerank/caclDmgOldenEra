@@ -41,6 +41,11 @@
   grid-template-columns: 1fr 1fr;
 }
 
+/* Ответного удара не было — оставшаяся карточка занимает всю ширину */
+.result-panel__body--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 /* ─────────────  Карточка результата  ───────────── */
 
 .result-card {

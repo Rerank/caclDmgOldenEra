@@ -46,6 +46,13 @@ export const ru = {
   strikeCard: 'Удар по защищающемуся',
   breakdown: 'Расшифровка',
 
+  // Куски строки расшифровки: «10 шт × 7–9 урона × … · увел. исх. 25%»
+  pcs: 'шт',
+  damageGenitive: 'урона',
+  outgoingShort: 'увел. исх.',
+  incomingShort: 'умен. вх.',
+  distance: 'дистанция',
+
   colMin: 'мин',
   colMax: 'макс',
   colAvg: 'сред',

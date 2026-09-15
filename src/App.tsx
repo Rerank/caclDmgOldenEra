@@ -2,6 +2,7 @@ import arrowIcon from './assets/images/arrow_right.webp'
 import swapIcon from './assets/images/swap.svg'
 import { AppHeader } from './components/AppHeader'
 import { RangedFields } from './components/RangedFields'
+import { Results } from './components/Results'
 import { UnitSide } from './components/UnitSide'
 import { Button } from './components/ui/Button'
 import { IconButton } from './components/ui/IconButton'
@@ -10,7 +11,7 @@ import { useCalculator } from './state/calculator'
 import './battle.css'
 
 export function App() {
-  const { input, patchSide, patchAttack } = useCalculator()
+  const { input, fresh, patchSide, patchAttack, strike } = useCalculator()
 
   return (
     <div className="page__inner">
@@ -43,9 +44,13 @@ export function App() {
 
         <div className="battle__strike">
           <img className="battle__arrow" src={arrowIcon} alt="" />
-          <Button variant="strike">{t.strike}</Button>
+          <Button variant="strike" onClick={strike}>
+            {t.strike}
+          </Button>
         </div>
       </main>
+
+      <Results fresh={fresh} />
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { calculate } from '../domain/damage'
 import { DEFAULT_INPUT } from '../domain/rules'
-import type { Input, Side } from '../domain/types'
+import type { Entry, Input, Side } from '../domain/types'
 
 export type Role = 'attacker' | 'defender'
 
@@ -28,14 +29,25 @@ function applyToSide(side: Side, patch: Partial<Side>): Side {
  */
 export function useCalculator() {
   const [input, setInput] = useState<Input>(DEFAULT_INPUT)
+  const [fresh, setFresh] = useState<Entry | null>(null)
 
   return {
     input,
+    fresh,
 
     patchSide: (role: Role, patch: Partial<Side>) =>
       setInput((current) => ({ ...current, [role]: applyToSide(current[role], patch) })),
 
     patchAttack: (patch: Partial<Pick<Input, 'ranged' | 'hexes'>>) =>
       setInput((current) => ({ ...current, ...patch })),
+
+    // Слепок параметров снимается прямо здесь: дальше форму можно править,
+    // а результат останется тем, с которым его посчитали.
+    strike: () =>
+      setFresh({
+        id: crypto.randomUUID(),
+        input: structuredClone(input),
+        result: calculate(input),
+      }),
   }
 }
