@@ -8,8 +8,8 @@ export type ComboboxOption = {
 }
 
 export type ComboboxGroup = {
-  /** null — опции без заголовка, например «Свой» в начале списка */
-  label: string | null
+  /** заголовок группы; прилипает к верху списка, пока листаешь её опции */
+  label: string
   options: ComboboxOption[]
 }
 

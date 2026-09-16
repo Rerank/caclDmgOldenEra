@@ -2,7 +2,10 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Иконку указываем явно: сам браузер ищет favicon.ico в корне домена,
+         а сайт живёт в подпапке (base в vite.config.ts). Путь — от корня,
+         префикс подпапки Vite подставит сам. -->
+    <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Калькулятор входящего урона — HoMM: Olden Era</title>
 

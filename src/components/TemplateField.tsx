@@ -22,6 +22,7 @@ export function TemplateField({ id, value, onChange }: Props) {
         id={id}
         labelId={labelId}
         value={value}
+        emptyLabel={t.customTemplate}
         groups={TEMPLATE_GROUPS}
         searchPlaceholder={t.templateSearch}
         onChange={onChange}

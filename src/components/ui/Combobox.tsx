@@ -7,6 +7,7 @@ import {
   type CSSProperties,
   type KeyboardEvent,
 } from 'react'
+import searchIcon from '../../assets/images/search.svg'
 import { t } from '../../i18n'
 import { filterGroups, type ComboboxGroup } from './comboboxFilter'
 import './combobox.css'
@@ -17,6 +18,8 @@ type Props = {
   /** id подписи поля: по ней называются и кнопка, и список */
   labelId: string
   value: string
+  /** подпись поля, когда значения в списке нет — у шаблонов это «Свой» */
+  emptyLabel: string
   groups: ComboboxGroup[]
   searchPlaceholder: string
   onChange: (value: string) => void
@@ -78,7 +81,15 @@ function revealOption(list: HTMLElement, option: HTMLElement, center: boolean) {
  * не выезжает, и список просто листается. На узком экране список
  * раскрывается на весь экран — это решает CSS, логика та же.
  */
-export function Combobox({ id, labelId, value, groups, searchPlaceholder, onChange }: Props) {
+export function Combobox({
+  id,
+  labelId,
+  value,
+  emptyLabel,
+  groups,
+  searchPlaceholder,
+  onChange,
+}: Props) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   /** подсвеченная опция: сквозной номер по всем видимым группам */
@@ -109,8 +120,11 @@ export function Combobox({ id, labelId, value, groups, searchPlaceholder, onChan
   const openList = (initialQuery: string, focusSearch: boolean) => {
     if (triggerRef.current) setPlacement(placeNear(triggerRef.current))
 
-    // без запроса курсор встаёт на текущее значение, с запросом — на первую находку
-    const start = initialQuery ? 0 : Math.max(0, allOptions.findIndex((o) => o.value === value))
+    // Без запроса курсор встаёт на текущее значение, с запросом — на первую
+    // находку. Если значения в списке нет (у шаблонов — «Свой»), не подсвечено
+    // ничего (-1): иначе Enter сразу после раскрытия молча выбрал бы первую опцию.
+    // Стрелка вниз из этого состояния встаёт на первую.
+    const start = initialQuery ? 0 : allOptions.findIndex((o) => o.value === value)
     onOpenRef.current = { focusSearch, reveal: start }
 
     setQuery(initialQuery)
@@ -216,7 +230,7 @@ export function Combobox({ id, labelId, value, groups, searchPlaceholder, onChan
         onClick={() => (open ? close(false) : openList('', matchMedia('(pointer: fine)').matches))}
         onKeyDown={onTriggerKeyDown}
       >
-        <span className="combobox__value">{selected?.label ?? value}</span>
+        <span className="combobox__value">{selected?.label ?? emptyLabel}</span>
         <span className="combobox__arrow" aria-hidden="true">
           ▼
         </span>
@@ -230,26 +244,30 @@ export function Combobox({ id, labelId, value, groups, searchPlaceholder, onChan
           onKeyDown={onPopupKeyDown}
         >
           <div className="combobox__head">
-            <input
-              ref={searchRef}
-              className="combobox__search"
-              type="text"
-              role="combobox"
-              aria-expanded="true"
-              aria-controls={listId}
-              aria-autocomplete="list"
-              aria-activedescendant={options[active] ? optionId(active) : undefined}
-              aria-labelledby={labelId}
-              placeholder={searchPlaceholder}
-              autoComplete="off"
-              spellCheck={false}
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value)
-                setActive(0)
-                if (listRef.current) listRef.current.scrollTop = 0
-              }}
-            />
+            {/* label — чтобы касание лупы тоже ставило курсор в поиск */}
+            <label className="combobox__field">
+              <img className="combobox__search-icon" src={searchIcon} alt="" />
+              <input
+                ref={searchRef}
+                className="combobox__search"
+                type="text"
+                role="combobox"
+                aria-expanded="true"
+                aria-controls={listId}
+                aria-autocomplete="list"
+                aria-activedescendant={options[active] ? optionId(active) : undefined}
+                aria-labelledby={labelId}
+                placeholder={searchPlaceholder}
+                autoComplete="off"
+                spellCheck={false}
+                value={query}
+                onChange={(event) => {
+                  setQuery(event.target.value)
+                  setActive(0)
+                  if (listRef.current) listRef.current.scrollTop = 0
+                }}
+              />
+            </label>
             <button
               type="button"
               className="combobox__close"
@@ -272,17 +290,11 @@ export function Combobox({ id, labelId, value, groups, searchPlaceholder, onChan
               const headerId = `${id}-group-${groupIndex}`
 
               return (
-                <li key={group.label ?? ''} role="presentation">
-                  {group.label && (
-                    <div className="combobox__group" id={headerId} role="presentation">
-                      {group.label}
-                    </div>
-                  )}
-                  <ul
-                    className={`combobox__options${group.label ? '' : ' combobox__options--flat'}`}
-                    role="group"
-                    aria-labelledby={group.label ? headerId : undefined}
-                  >
+                <li key={group.label} role="presentation">
+                  <div className="combobox__group" id={headerId} role="presentation">
+                    {group.label}
+                  </div>
+                  <ul className="combobox__options" role="group" aria-labelledby={headerId}>
                     {group.options.map((option, optionIndex) => {
                       const index = offsets[groupIndex] + optionIndex
                       const cls = [

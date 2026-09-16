@@ -4,7 +4,6 @@ import { filterGroups, type ComboboxGroup } from './comboboxFilter'
 const option = (value: string, ...keywords: string[]) => ({ value, label: keywords[0], keywords })
 
 const groups: ComboboxGroup[] = [
-  { label: null, options: [option('custom', 'Свой')] },
   {
     label: 'Храм',
     options: [option('marksman', 'Тяжелый арбалетчик', 'Marksman'), option('griffin', 'Грифон', 'Griffin')],
@@ -22,7 +21,7 @@ const groups: ComboboxGroup[] = [
 const found = (query: string) => filterGroups(groups, query).flatMap((g) => g.options.map((o) => o.value))
 
 describe('поиск в комбобоксе', () => {
-  test('пустой запрос оставляет список целиком, вместе со «Своим»', () => {
+  test('пустой запрос оставляет список целиком', () => {
     expect(filterGroups(groups, '')).toBe(groups)
     expect(filterGroups(groups, '   ')).toBe(groups)
   })
