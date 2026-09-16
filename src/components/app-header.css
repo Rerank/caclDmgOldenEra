@@ -1,5 +1,6 @@
 /* ============================================================
-   app-header — шапка: название игры, заголовок и формула урона.
+   app-header — шапка: название игры, заголовок, формула урона
+   и раскрывающиеся пояснения к ней.
    ============================================================ */
 
 .app-header {
@@ -27,12 +28,40 @@
   color: var(--color-text);
 }
 
-.app-header__formula {
-  margin-top: 10px;
+/* Формула и пояснения к ней — один текст, поэтому и набор один:
+   правило общее, чтобы они не разошлись */
+.app-header__formula,
+.app-header__notes {
   font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.5;
   color: var(--color-text-formula);
+}
+
+.app-header__formula {
+  margin-top: 10px;
+}
+
+/* Слагаемое формулы не разрывается: перенос только перед «×» */
+.app-header__term {
+  white-space: nowrap;
+}
+
+/* «Подробнее» — второй строкой под формулой. Цвет — как у формулы:
+   подпись стоит на фоне страницы, а он темнее панели, и цветом
+   «Дополнительно» читалась бы бледнее — контраст ниже. */
+.app-header__more {
+  margin-top: 6px;
+  --disclosure-color: var(--color-text-formula);
+}
+
+.app-header__notes p + p {
+  margin-top: 8px;
+}
+
+/* термины выделены только начертанием: шрифт и цвет — как у всего текста */
+.app-header__notes strong {
+  font-weight: 700;
 }
 
 @media (max-width: 900px) {
@@ -56,8 +85,12 @@
     font-size: 24px;
   }
 
+  .app-header__formula,
+  .app-header__notes {
+    font-size: 11px;
+  }
+
   .app-header__formula {
     margin-top: 8px;
-    font-size: 11px;
   }
 }

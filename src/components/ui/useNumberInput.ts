@@ -25,6 +25,9 @@ export function useNumberInput({ value, min, max, onChange }: Options) {
   return {
     type: 'text' as const,
     inputMode: 'numeric' as const,
+    // Браузер не предлагает прежние значения: подсказка «10, 25, 7» под полем
+    // атаки только мешает — число каждый раз своё и набирается быстрее выбора
+    autoComplete: 'off' as const,
     value: draft ?? String(value),
 
     onChange: (event: ChangeEvent<HTMLInputElement>) => {

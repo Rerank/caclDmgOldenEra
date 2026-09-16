@@ -25,8 +25,17 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--color-text-meta);
+  /* цвет подписи можно переопределить снаружи, если блок стоит не на панели */
+  color: var(--disclosure-color, var(--color-text-meta));
   transition: color 0.12s ease;
+}
+
+/* Стрелка рядом с подписью, а не у правого края. Для блока в свободном
+   потоке страницы (шапка): там до края далеко, и стрелка оторвалась бы
+   от подписи. Кликабельна тоже только сама подпись. */
+.disclosure--inline .disclosure__toggle {
+  justify-content: flex-start;
+  width: fit-content;
 }
 
 /* тот же маркер в Safari */

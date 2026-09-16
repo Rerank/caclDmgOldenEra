@@ -68,12 +68,18 @@ type EntryPanelProps = {
 }
 
 /**
- * Одна панель результата. Разворачивает запись в две карточки: ответный удар
- * описывает, что случилось с атакующим, удар по защищающемуся — что случилось
- * с защищающимся.
+ * Одна панель результата. Разворачивает запись в две карточки: удар
+ * по защищающемуся описывает, что случилось с защищающимся, ответный удар —
+ * что случилось с атакующим.
  *
  * Цвет карточки — стороны, которая бьёт. А слепок и таблица — стороны, которая
  * получает: карточка стоит под её панелью, и там же ждёшь увидеть её параметры.
+ *
+ * Порядок в разметке — порядок чтения: сначала потери защищающегося, потом
+ * атакующего. На телефоне карточки так и идут сверху вниз. На ПК они стоят
+ * под панелями своих сторон, и ответный удар CSS переносит в левую колонку —
+ * взгляд идёт по часовой стрелке: атакующий → защищающийся → его потери
+ * → потери атакующего.
  */
 function EntryPanel({ entry, title, action, pinned, entering, leaving }: EntryPanelProps) {
   const { input, result } = entry
@@ -87,6 +93,14 @@ function EntryPanel({ entry, title, action, pinned, entering, leaving }: EntryPa
       leaving={leaving}
       single={result.counter === null}
     >
+      <ResultCard
+        variant="strike"
+        strike={result.strike}
+        maxHp={input.defender.hp}
+        snapshot={pinned ? formatSnapshot(input.defender) : undefined}
+        breakdown={formatBreakdown(result.strike, input.attacker, input.defender)}
+      />
+
       {result.counter && (
         <ResultCard
           variant="counter"
@@ -96,14 +110,6 @@ function EntryPanel({ entry, title, action, pinned, entering, leaving }: EntryPa
           breakdown={formatBreakdown(result.counter, input.defender, input.attacker)}
         />
       )}
-
-      <ResultCard
-        variant="strike"
-        strike={result.strike}
-        maxHp={input.defender.hp}
-        snapshot={pinned ? formatSnapshot(input.defender) : undefined}
-        breakdown={formatBreakdown(result.strike, input.attacker, input.defender)}
-      />
     </ResultPanel>
   )
 }
