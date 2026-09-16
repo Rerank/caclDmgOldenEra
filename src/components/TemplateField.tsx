@@ -1,4 +1,4 @@
-import { CREATURE_TEMPLATES } from '../data/creatures'
+import { CUSTOM_TEMPLATE_ID } from '../data/creatures'
 import { t } from '../i18n'
 import './select-field.css'
 
@@ -9,8 +9,10 @@ type Props = {
 }
 
 /**
- * Выбор шаблона существа. Пока это нативный <select> с одной опцией «Свой» —
- * комбобокс с поиском появится вместе со справочником существ.
+ * Выбор шаблона существа. Пока это нативный <select> с одной опцией «Свой».
+ * Справочник уже лежит в data/creatures.ts, но в список его не выводим:
+ * без подстановки параметров выбор существа ничего бы не менял.
+ * Список появится вместе с комбобоксом и подстановкой.
  */
 export function TemplateField({ id, value, onChange }: Props) {
   const labelId = `${id}-label`
@@ -28,11 +30,7 @@ export function TemplateField({ id, value, onChange }: Props) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
         >
-          {CREATURE_TEMPLATES.map((template) => (
-            <option key={template.id} value={template.id}>
-              {t.creatures[template.nameKey] ?? template.nameKey}
-            </option>
-          ))}
+          <option value={CUSTOM_TEMPLATE_ID}>{t.customTemplate}</option>
         </select>
         <span className="select-field__arrow" aria-hidden="true">
           ▼

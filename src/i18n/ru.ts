@@ -16,6 +16,8 @@ export const ru = {
   // Герой и параметры существа
   hero: 'Герой',
   template: 'Шаблон',
+  /** шаблон без существа; имена существ — в data/creatures.ts */
+  customTemplate: 'Свой',
   hp: 'Здоровье',
   hpCurrent: 'Здоровье верхнего существа',
   hpMax: 'Максимальное здоровье существа',
@@ -73,11 +75,6 @@ export const ru = {
   rowKilled: 'Умерло',
   rowSurvived: 'Выжило',
   rowHp: 'Здоровье',
-
-  /** Имена шаблонов существ. Ключ берётся из data/creatures.ts */
-  creatures: {
-    custom: 'Свой',
-  } as Record<string, string>,
 }
 
 export type Dictionary = typeof ru
