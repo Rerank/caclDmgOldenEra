@@ -9,6 +9,8 @@ import { TemplateField } from './TemplateField'
 import { Disclosure } from './ui/Disclosure'
 import { NumberField } from './ui/NumberField'
 import { PairField } from './ui/PairField'
+import { ParamRow } from './ui/ParamRow'
+import { Toggle } from './ui/Toggle'
 import './unit-side.css'
 
 type Props = {
@@ -127,6 +129,24 @@ export function UnitSide({ role, side, onChange, extra }: Props) {
               onChange: (damageMax) => onChange({ damageMax }),
             }}
           />
+
+          {/* Свойство существа, но показываем только у защищающегося:
+              атакующий в этом обмене не контратакует, и тумблер там был бы
+              мёртвым. Данные лежат в side, поэтому слот extra не нужен. */}
+          {!isAttacker && (
+            <ParamRow
+              label={t.weakCounter}
+              title={t.weakCounterHint}
+              htmlFor={`${role}-weak-counter`}
+            >
+              <Toggle
+                id={`${role}-weak-counter`}
+                checked={side.counterHalved}
+                onChange={(counterHalved) => onChange({ counterHalved })}
+              />
+            </ParamRow>
+          )}
+
           {extra}
         </div>
 

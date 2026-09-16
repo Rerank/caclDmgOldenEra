@@ -102,10 +102,10 @@ export function useCalculator() {
       setInput((current) => ({ ...current, [role]: applyToSide(current[role], patch) }))
     },
 
-    patchAttack: (patch: Partial<Pick<Input, 'ranged' | 'hexes'>>) => {
+    patchAttack: (patch: Partial<Pick<Input, 'ranged' | 'rangePenalty'>>) => {
       const unchanged =
         (patch.ranged === undefined || patch.ranged === input.ranged) &&
-        (patch.hexes === undefined || patch.hexes === input.hexes)
+        (patch.rangePenalty === undefined || patch.rangePenalty === input.rangePenalty)
       if (unchanged) return
 
       dropFresh()
@@ -113,7 +113,7 @@ export function useCalculator() {
     },
 
     // Меняются местами стороны целиком, вместе с героями. Дистанционная атака
-    // и гексы остаются на месте: это свойства удара, а не существа.
+    // и штраф остаются на месте: это свойства удара, а не существа.
     swap: () => {
       dropFresh()
       setInput((current) => ({

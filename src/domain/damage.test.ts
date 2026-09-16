@@ -22,6 +22,7 @@ const side = (over: Partial<Side> = {}): Side => {
     heroDefense: 0,
     outgoing: 0,
     incoming: 0,
+    counterHalved: false,
     ...over,
   }
 
@@ -37,7 +38,7 @@ const input = (
   attacker: side(attacker),
   defender: side(defender),
   ranged: false,
-  hexes: 2,
+  rangePenalty: 0,
   ...extra,
 })
 
@@ -103,11 +104,12 @@ describe('удар по защищающемуся', () => {
       input(
         { count: 10, damageMin: 8, damageMax: 8, attack: 10 },
         { defense: 8, hp: 1000 },
-        { ranged: true, hexes: 6 },
+        { ranged: true, rangePenalty: 30 },
       ),
     )
 
     expect(strike.min.damage).toBe(60)
+    expect(strike.penalty).toBe(30)
   })
 
   test('сверено с игрой: 4 шт × 5–9 урона против защиты 5', () => {
@@ -165,21 +167,61 @@ describe('раненый стек', () => {
 })
 
 describe('штраф за дистанцию', () => {
-  const shot = (hexes: number) =>
+  // 10 шт × 10 урона без модификаторов = 100
+  const shot = (rangePenalty: number, ranged = true) =>
     calculate(
-      input({ count: 10, damageMin: 10, damageMax: 10 }, { hp: 1000 }, { ranged: true, hexes }),
+      input({ count: 10, damageMin: 10, damageMax: 10 }, { hp: 1000 }, { ranged, rangePenalty }),
     ).strike
 
-  test('до трёх гексов включительно штрафа нет, дальше −10% за гекс', () => {
-    expect(shot(3).min.damage).toBe(100)
-    expect(shot(4).min.damage).toBe(90)
-    expect(shot(4).rangePenalty).toBe(10)
+  test('штраф снимает свою долю урона', () => {
+    expect(shot(0).min.damage).toBe(100)
+    expect(shot(10).min.damage).toBe(90)
+    expect(shot(50).min.damage).toBe(50)
   })
 
-  test('суммарный штраф не превышает 50%', () => {
-    expect(shot(8).min.damage).toBe(50)
-    expect(shot(20).min.damage).toBe(50)
-    expect(shot(20).rangePenalty).toBe(50)
+  test('штраф не превышает 50%, каким бы ни пришёл', () => {
+    expect(shot(80).min.damage).toBe(50)
+    expect(shot(80).penalty).toBe(50)
+  })
+
+  test('в ближнем бою штраф не применяется', () => {
+    expect(shot(50, false).min.damage).toBe(100)
+    expect(shot(50, false).penalty).toBe(0)
+  })
+})
+
+describe('ослабленная контратака', () => {
+  // удар слабый и никого не убивает, отвечают все десять
+  const battle = (over: Partial<Side>, extra: Partial<Input> = {}) =>
+    calculate(
+      input(
+        { count: 10, damageMin: 1, damageMax: 1, hp: 1000 },
+        { count: 10, damageMin: 10, damageMax: 10, hp: 1000, ...over },
+        extra,
+      ),
+    )
+
+  test('стрелок в ближнем бою отвечает вполсилы', () => {
+    expect(battle({}).counter?.min.damage).toBe(100)
+    expect(battle({ counterHalved: true }).counter?.min.damage).toBe(50)
+    expect(battle({ counterHalved: true }).counter?.penalty).toBe(50)
+  })
+
+  test('ослабленная контратака не отменяет правила о выстреле', () => {
+    expect(battle({ counterHalved: true }, { ranged: true }).counter).toBeNull()
+  })
+
+  test('тот же флаг у атакующего на расчёт не влияет', () => {
+    // атакующий в этом обмене не контратакует, его собственный флаг ничего не меняет
+    const { strike, counter } = calculate(
+      input(
+        { count: 10, damageMin: 1, damageMax: 1, hp: 1000, counterHalved: true },
+        { count: 10, damageMin: 10, damageMax: 10, hp: 1000 },
+      ),
+    )
+
+    expect(strike.min.damage).toBe(10)
+    expect(counter?.min.damage).toBe(100)
   })
 })
 
@@ -211,7 +253,7 @@ describe('ответный удар', () => {
 
   test('дистанционная атака ответа не провоцирует', () => {
     const { counter } = calculate(
-      input({ count: 10, damageMin: 1, damageMax: 1 }, { hp: 100, count: 8 }, { ranged: true, hexes: 2 }),
+      input({ count: 10, damageMin: 1, damageMax: 1 }, { hp: 100, count: 8 }, { ranged: true }),
     )
 
     expect(counter).toBeNull()

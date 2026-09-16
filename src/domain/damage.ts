@@ -20,13 +20,6 @@ function bonusMultiplier(outgoing: number, incoming: number): number {
   return Math.max(RULES.minMultiplier, 1 + (outgoing - incoming) / 100)
 }
 
-/** Штраф за дистанцию в процентах: −10% за каждый гекс сверх трёх, не более −50%. */
-export function rangePenalty(ranged: boolean, hexes: number): number {
-  if (!ranged) return 0
-  const extraHexes = Math.max(0, hexes - RULES.rangeFreeHexes)
-  return Math.min(RULES.rangePenaltyMax, extraHexes * RULES.rangePenaltyPerHex)
-}
-
 /**
  * Поправка на ошибку представления. Цепочка множителей считается в double,
  * поэтому значение, которое математически ровно попадает на половину,
@@ -115,19 +108,20 @@ function buildStrike(
     countMax: Math.max(counts.min, counts.max),
     attack,
     defense,
-    rangePenalty: penaltyPercent,
+    penalty: penaltyPercent,
   }
 }
 
 export function calculate(input: Input): Result {
-  const { attacker, defender, ranged, hexes } = input
+  const { attacker, defender, ranged, rangePenalty } = input
 
   const count = attacker.count
   const strike = buildStrike(
     attacker,
     defender,
     { min: count, max: count, avg: count },
-    rangePenalty(ranged, hexes),
+    // в ближнем бою штрафа нет, каким бы ни осталось значение в поле
+    ranged ? Math.min(rangePenalty, RULES.rangePenaltyMax) : 0,
   )
 
   // Отвечают выжившие, поэтому ветки перекрёстные: самый слабый удар
@@ -140,7 +134,15 @@ export function calculate(input: Input): Result {
 
   // Выстрел ответа не провоцирует; мёртвые не отвечают
   const counter =
-    ranged || survivors.max === 0 ? null : buildStrike(defender, attacker, survivors, 0)
+    ranged || survivors.max === 0
+      ? null
+      : buildStrike(
+          defender,
+          attacker,
+          survivors,
+          // стрелок, которого достали в ближнем бою, отвечает вполсилы
+          defender.counterHalved ? RULES.weakCounterPenalty : 0,
+        )
 
   return { strike, counter }
 }

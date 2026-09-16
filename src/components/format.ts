@@ -17,15 +17,8 @@ const templateName = (id: string) => {
  *
  * Атака и защита здесь уже с героями. У ответного удара количество бьющих —
  * диапазон: отвечают выжившие, а их число зависит от силы первого удара.
- *
- * @param hexes расстояние до цели или null, если удар не дистанционный
  */
-export function formatBreakdown(
-  strike: Strike,
-  striker: Side,
-  receiver: Side,
-  hexes: number | null,
-): string {
+export function formatBreakdown(strike: Strike, striker: Side, receiver: Side): string {
   const parts = [
     `${range(strike.countMin, strike.countMax)} ${t.pcs}` +
       ` × ${range(striker.damageMin, striker.damageMax)} ${t.damageGenitive}` +
@@ -36,11 +29,7 @@ export function formatBreakdown(
   if (striker.outgoing > 0) parts.push(`${t.outgoingShort} ${striker.outgoing}%`)
   if (receiver.incoming > 0) parts.push(`${t.incomingShort} ${receiver.incoming}%`)
 
-  if (hexes !== null) {
-    // штраф показываем, только когда он есть: «дистанция 2» против «дистанция 5 (−20%)»
-    const penalty = strike.rangePenalty > 0 ? ` (−${strike.rangePenalty}%)` : ''
-    parts.push(`${t.distance} ${hexes}${penalty}`)
-  }
+  if (strike.penalty > 0) parts.push(`${t.penaltyShort} −${strike.penalty}%`)
 
   return parts.join(' · ')
 }

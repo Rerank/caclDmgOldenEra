@@ -37,9 +37,9 @@ export function App() {
           extra={
             <RangedFields
               ranged={input.ranged}
-              hexes={input.hexes}
+              rangePenalty={input.rangePenalty}
               onRangedChange={(ranged) => patchAttack({ ranged })}
-              onHexesChange={(hexes) => patchAttack({ hexes })}
+              onPenaltyChange={(rangePenalty) => patchAttack({ rangePenalty })}
             />
           }
         />

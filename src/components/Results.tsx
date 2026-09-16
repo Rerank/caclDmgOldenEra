@@ -77,7 +77,6 @@ type EntryPanelProps = {
  */
 function EntryPanel({ entry, title, action, pinned, entering, leaving }: EntryPanelProps) {
   const { input, result } = entry
-  const hexes = input.ranged ? input.hexes : null
 
   return (
     <ResultPanel
@@ -94,7 +93,7 @@ function EntryPanel({ entry, title, action, pinned, entering, leaving }: EntryPa
           strike={result.counter}
           maxHp={input.attacker.hp}
           snapshot={pinned ? formatSnapshot(input.attacker) : undefined}
-          breakdown={formatBreakdown(result.counter, input.defender, input.attacker, null)}
+          breakdown={formatBreakdown(result.counter, input.defender, input.attacker)}
         />
       )}
 
@@ -103,7 +102,7 @@ function EntryPanel({ entry, title, action, pinned, entering, leaving }: EntryPa
         strike={result.strike}
         maxHp={input.defender.hp}
         snapshot={pinned ? formatSnapshot(input.defender) : undefined}
-        breakdown={formatBreakdown(result.strike, input.attacker, input.defender, hexes)}
+        breakdown={formatBreakdown(result.strike, input.attacker, input.defender)}
       />
     </ResultPanel>
   )

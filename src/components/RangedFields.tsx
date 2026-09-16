@@ -6,30 +6,36 @@ import { Toggle } from './ui/Toggle'
 
 type Props = {
   ranged: boolean
-  hexes: number
+  rangePenalty: number
   onRangedChange: (ranged: boolean) => void
-  onHexesChange: (hexes: number) => void
+  onPenaltyChange: (rangePenalty: number) => void
 }
 
 /**
- * Дистанционная атака и расстояние до цели. Это свойства удара, а не стороны,
- * поэтому блок приходит в UnitSide слотом, а состояние живёт отдельно.
+ * Дистанционная атака и её штраф. Это свойства удара, а не стороны, поэтому
+ * блок приходит в UnitSide слотом, а состояние живёт отдельно.
+ *
+ * Штраф задаётся прямо в процентах, а не расстоянием до цели: у части существ
+ * выстрел штрафа не имеет вовсе, и расстояние тогда ни о чём не говорит.
  */
-export function RangedFields({ ranged, hexes, onRangedChange, onHexesChange }: Props) {
+export function RangedFields({ ranged, rangePenalty, onRangedChange, onPenaltyChange }: Props) {
   return (
     <>
       <ParamRow label={t.ranged} htmlFor="attack-ranged">
         <Toggle id="attack-ranged" checked={ranged} onChange={onRangedChange} />
       </ParamRow>
 
-      {/* без дистанционной атаки расстояние ни на что не влияет — прячем */}
+      {/* в ближнем бою штраф ни на что не влияет — прячем */}
       {ranged && (
         <NumberField
-          id="attack-hexes"
-          label={t.hexes}
-          value={hexes}
-          {...F.hexes}
-          onChange={onHexesChange}
+          id="attack-penalty"
+          label={t.penalty}
+          title={t.penaltyHint}
+          value={rangePenalty}
+          sign="−"
+          unit="%"
+          {...F.rangePenalty}
+          onChange={onPenaltyChange}
         />
       )}
     </>

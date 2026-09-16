@@ -10,12 +10,10 @@ export const RULES = {
   base: 20,
   /** пол слоя бонусов: после всех штрафов остаётся минимум 10% урона */
   minMultiplier: 0.1,
-  /** до скольких гексов стрелок бьёт без штрафа */
-  rangeFreeHexes: 3,
-  /** штраф за каждый гекс сверх свободных, % */
-  rangePenaltyPerHex: 10,
-  /** максимальный суммарный штраф за дистанцию, % */
+  /** максимальный штраф за дистанцию, % */
   rangePenaltyMax: 50,
+  /** насколько слабее отвечает стрелок, которого достали в ближнем бою, % */
+  weakCounterPenalty: 50,
   /** при любых модификаторах финальный урон не меньше этого */
   minDamage: 1,
 } as const
@@ -34,8 +32,8 @@ export const F = {
   damage: { min: 0, max: 9999, step: 1 },
   count: { min: 1, max: 9999, step: 1 },
   hero: { min: 0, max: 99, step: 1 },
-  /** минимум 2: на соседнем гексе это уже ближний бой, а не выстрел */
-  hexes: { min: 2, max: 20, step: 1 },
+  /** шаг 10: в игре штраф набегает по −10% за гекс свыше трёх */
+  rangePenalty: { min: 0, max: RULES.rangePenaltyMax, step: 10 },
   outgoing: { min: 0, max: 500, step: 5 },
   incoming: { min: 0, max: 100, step: 5 },
 } as const
@@ -54,6 +52,7 @@ export const DEFAULT_INPUT: Input = {
     heroDefense: 0,
     outgoing: 0,
     incoming: 0,
+    counterHalved: false,
   },
   defender: {
     templateId: 'custom',
@@ -68,7 +67,8 @@ export const DEFAULT_INPUT: Input = {
     heroDefense: 0,
     outgoing: 0,
     incoming: 0,
+    counterHalved: false,
   },
   ranged: false,
-  hexes: 2,
+  rangePenalty: 0,
 }
