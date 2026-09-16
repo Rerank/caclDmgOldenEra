@@ -1,6 +1,6 @@
 import { F } from '../domain/rules'
-import type { Side } from '../domain/types'
 import { t } from '../i18n'
+import type { SidePatch } from '../state/transitions'
 import { NumberField } from './ui/NumberField'
 import './hero-panel.css'
 
@@ -9,7 +9,7 @@ type Props = {
   idPrefix: string
   attack: number
   defense: number
-  onChange: (patch: Partial<Side>) => void
+  onChange: (patch: SidePatch) => void
 }
 
 /**

@@ -4,6 +4,7 @@ import defenseIcon from '../assets/images/defense.webp'
 import { F } from '../domain/rules'
 import type { Side } from '../domain/types'
 import { t } from '../i18n'
+import type { SidePatch } from '../state/transitions'
 import { HeroPanel } from './HeroPanel'
 import { TemplateField } from './TemplateField'
 import { Disclosure } from './ui/Disclosure'
@@ -17,7 +18,9 @@ type Props = {
   role: 'attacker' | 'defender'
   side: Side
   /** патч: меняем одно поле, не собирая весь объект в вызывающем коде */
-  onChange: (patch: Partial<Side>) => void
+  onChange: (patch: SidePatch) => void
+  /** шаблон меняется отдельно: он подставляет сразу несколько полей */
+  onTemplateChange: (templateId: string) => void
   /** доп. блок внутри панели параметров; есть только у атакующего */
   extra?: ReactNode
 }
@@ -41,7 +44,7 @@ const withHero = (own: number, hero: number, limits: { min: number; max: number;
  * Сторона боя. Компонент один на обе: различаются только иконка, заголовок,
  * цвет (через модификатор и переменную --side-accent) и наличие слота extra.
  */
-export function UnitSide({ role, side, onChange, extra }: Props) {
+export function UnitSide({ role, side, onChange, onTemplateChange, extra }: Props) {
   const isAttacker = role === 'attacker'
   const hasExtras = side.outgoing !== 0 || side.incoming !== 0
 
@@ -63,7 +66,7 @@ export function UnitSide({ role, side, onChange, extra }: Props) {
         <TemplateField
           id={`${role}-template`}
           value={side.templateId}
-          onChange={(templateId) => onChange({ templateId })}
+          onChange={onTemplateChange}
         />
 
         <div className="unit-panel__params">

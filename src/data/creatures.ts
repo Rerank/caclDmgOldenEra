@@ -1184,3 +1184,8 @@ export const CREATURE_TEMPLATES: CreatureTemplate[] = [
     hp: 999, attack: 66, defense: 66, damageMin: 99, damageMax: 99,
   },
 ]
+
+const BY_ID = new Map(CREATURE_TEMPLATES.map((template) => [template.id, template]))
+
+/** Шаблон по id. У «Своего» и у неизвестного id — undefined: подставлять нечего. */
+export const findTemplate = (id: string): CreatureTemplate | undefined => BY_ID.get(id)

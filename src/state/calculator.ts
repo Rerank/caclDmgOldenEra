@@ -1,47 +1,15 @@
 import { useState } from 'react'
 import { calculate } from '../domain/damage'
 import { DEFAULT_INPUT } from '../domain/rules'
-import type { Entry, Input, Side } from '../domain/types'
-
-export type Role = 'attacker' | 'defender'
+import type { Entry, Input } from '../domain/types'
+import * as transitions from './transitions'
+import type { AttackPatch, Role, SidePatch } from './transitions'
 
 /**
  * Длительность анимаций появления и ухода панели результата.
  * Должна совпадать с --result-anim в styles/variables.css.
  */
 const ANIMATION_MS = 160
-
-/**
- * Связанные поля. Ввод не блокируем, а подтягиваем соседнее: пользователь
- * набирает число, а не борется с валидацией.
- */
-function applyToSide(side: Side, patch: Partial<Side>): Side {
-  const next = { ...side, ...patch }
-
-  // урон min не может быть больше урона max
-  if (patch.damageMin !== undefined && next.damageMin > next.damageMax) {
-    next.damageMax = next.damageMin
-  }
-  if (patch.damageMax !== undefined && next.damageMax < next.damageMin) {
-    next.damageMin = next.damageMax
-  }
-
-  // Пока существо цело, текущее здоровье едет за максимальным; раненое —
-  // остаётся как есть, только подрезается сверху
-  if (patch.hp !== undefined) {
-    next.topHp = side.topHp === side.hp ? next.hp : Math.min(next.topHp, next.hp)
-  }
-  if (patch.topHp !== undefined) {
-    next.topHp = Math.min(next.topHp, next.hp)
-  }
-
-  return next
-}
-
-/** Патч ничего не меняет: все его поля уже равны текущим. */
-function isNoop(side: Side, patch: Partial<Side>): boolean {
-  return (Object.keys(patch) as Array<keyof Side>).every((key) => side[key] === patch[key])
-}
 
 /**
  * Состояние калькулятора. Обычный useState за фасадом хука: операций мало
@@ -89,6 +57,17 @@ export function useCalculator() {
     dismiss(id, () => setFresh((current) => (current?.id === id ? null : current)))
   }
 
+  /**
+   * Единая точка правки формы. Переход, вернувший тот же объект, ничего
+   * не меняет — тогда не трогаем и «Итог»: ввод того же числа или повторный
+   * выбор того же шаблона не должны убирать результат.
+   */
+  const update = (transition: (current: Input) => Input) => {
+    if (transition(input) === input) return
+    dropFresh()
+    setInput(transition)
+  }
+
   return {
     input,
     fresh,
@@ -96,32 +75,16 @@ export function useCalculator() {
     enteringIds,
     leavingIds,
 
-    patchSide: (role: Role, patch: Partial<Side>) => {
-      if (isNoop(input[role], patch)) return
-      dropFresh()
-      setInput((current) => ({ ...current, [role]: applyToSide(current[role], patch) }))
-    },
+    patchSide: (role: Role, patch: SidePatch) =>
+      update((current) => transitions.patchSide(current, role, patch)),
 
-    patchAttack: (patch: Partial<Pick<Input, 'ranged' | 'rangePenalty'>>) => {
-      const unchanged =
-        (patch.ranged === undefined || patch.ranged === input.ranged) &&
-        (patch.rangePenalty === undefined || patch.rangePenalty === input.rangePenalty)
-      if (unchanged) return
+    patchAttack: (patch: AttackPatch) =>
+      update((current) => transitions.patchAttack(current, patch)),
 
-      dropFresh()
-      setInput((current) => ({ ...current, ...patch }))
-    },
+    selectTemplate: (role: Role, templateId: string) =>
+      update((current) => transitions.selectTemplate(current, role, templateId)),
 
-    // Меняются местами стороны целиком, вместе с героями. Дистанционная атака
-    // и штраф остаются на месте: это свойства удара, а не существа.
-    swap: () => {
-      dropFresh()
-      setInput((current) => ({
-        ...current,
-        attacker: current.defender,
-        defender: current.attacker,
-      }))
-    },
+    swap: () => update(transitions.swapSides),
 
     // Слепок параметров снимается прямо здесь: дальше форму можно править,
     // а результат останется тем, с которым его посчитали.

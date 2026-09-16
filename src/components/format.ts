@@ -1,4 +1,4 @@
-import { CREATURE_TEMPLATES, CUSTOM_TEMPLATE_ID } from '../data/creatures'
+import { CUSTOM_TEMPLATE_ID, findTemplate } from '../data/creatures'
 import { RULES } from '../domain/rules'
 import type { Side, Strike } from '../domain/types'
 import { lang, t } from '../i18n'
@@ -9,7 +9,7 @@ const range = (min: number, max: number) => (min === max ? `${min}` : `${min}–
 const templateName = (id: string) =>
   id === CUSTOM_TEMPLATE_ID
     ? t.customTemplate
-    : (CREATURE_TEMPLATES.find((item) => item.id === id)?.name[lang] ?? id)
+    : (findTemplate(id)?.name[lang] ?? id)
 
 /**
  * Строка под таблицей результата: из чего сложился этот урон.

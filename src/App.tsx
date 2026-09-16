@@ -19,6 +19,7 @@ export function App() {
     leavingIds,
     patchSide,
     patchAttack,
+    selectTemplate,
     swap,
     strike,
     pin,
@@ -34,6 +35,7 @@ export function App() {
           role="attacker"
           side={input.attacker}
           onChange={(patch) => patchSide('attacker', patch)}
+          onTemplateChange={(templateId) => selectTemplate('attacker', templateId)}
           extra={
             <RangedFields
               ranged={input.ranged}
@@ -52,6 +54,7 @@ export function App() {
           role="defender"
           side={input.defender}
           onChange={(patch) => patchSide('defender', patch)}
+          onTemplateChange={(templateId) => selectTemplate('defender', templateId)}
         />
 
         <div className="battle__strike">

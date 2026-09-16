@@ -1,0 +1,258 @@
+/* ============================================================
+   combobox — выпадающий список с поиском и группами.
+
+   Закрытое поле выглядит как прежний селект: рамка, значение
+   и квадратная «кнопка» со стрелкой справа.
+   На ПК список раскрывается под полем (или над ним, если снизу
+   тесно — решает Combobox.tsx). На узком экране — на весь экран.
+   ============================================================ */
+
+.combobox {
+  position: relative;
+}
+
+/* — Поле — */
+
+.combobox__trigger {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  /* +2px рамки: у прежнего селекта рамка была снаружи высоты строки */
+  height: calc(var(--control-height) + 2px);
+  padding: 0;
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-field);
+  font-family: var(--font-serif);
+  font-size: 16px; /* как у подписей параметров */
+  color: var(--color-text);
+  text-align: left;
+}
+
+/* раскрытое поле держит контур, пока фокус внутри списка */
+.combobox--open .combobox__trigger {
+  outline: 2px solid var(--color-attacker);
+  outline-offset: 2px;
+}
+
+.combobox__value {
+  flex: 1;
+  min-width: 0;
+  align-self: center;
+  padding: 0 10px 0 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.combobox__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--control-btn-size);
+  background-color: var(--color-control);
+  border-left: 1px solid var(--color-border-strong);
+  color: var(--color-text-muted);
+  font-size: 10px;
+}
+
+/* — Раскрытый список — */
+
+.combobox__popup {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* зазор 6px — место под контур фокуса (2px + 2px отступа); GAP в Combobox.tsx */
+  top: calc(100% + 6px);
+  z-index: 20;
+
+  display: flex;
+  flex-direction: column;
+  /* высоту считает Combobox.tsx по месту до края окна */
+  max-height: var(--combobox-max-height, 420px);
+
+  background-color: var(--color-field);
+  border: 1px solid var(--color-border-strong);
+  box-shadow: 0 8px 24px rgba(32, 29, 24, 0.18);
+}
+
+.combobox__popup--up {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
+.combobox__head {
+  display: flex;
+  flex: none;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.combobox__search {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  color: var(--color-text);
+}
+
+.combobox__search::placeholder {
+  color: var(--color-text-meta);
+}
+
+/* фокус в поиске и так виден по курсору; контур лёг бы поверх рамки списка */
+.combobox__search:focus {
+  outline: none;
+}
+
+/* «×» нужен только на весь экран: на ПК список закрывают Esc и клик мимо */
+.combobox__close {
+  display: none;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--color-divider);
+  background-color: var(--color-control);
+  font-size: 24px;
+  line-height: 1;
+  color: var(--color-text-muted);
+}
+
+.combobox__list {
+  --combobox-group-height: 28px;
+
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0 0 4px;
+  list-style: none;
+  overflow-y: auto;
+  /* докрутил до конца — страница под списком не поедет */
+  overscroll-behavior: contain;
+  /* прокрутка к опции учитывает прилипший заголовок группы */
+  scroll-padding-top: var(--combobox-group-height);
+}
+
+.combobox__list:focus {
+  outline: none;
+}
+
+/* Заголовок группы прилипает к верху, пока листаешь её опции,
+   и уступает место следующему: так всегда видно, где находишься */
+.combobox__group {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  height: var(--combobox-group-height);
+  padding: 0 12px;
+
+  background-color: var(--color-panel);
+  border-bottom: 1px solid var(--color-divider);
+
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-meta);
+}
+
+.combobox__options {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.combobox__option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 34px;
+  padding: 0 12px 0 20px;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+/* опции без группы («Свой») стоят вровень с заголовками, без отступа */
+.combobox__options--flat .combobox__option {
+  padding-left: 12px;
+}
+
+.combobox__option--active {
+  background-color: var(--color-control);
+}
+
+/* текущее значение */
+.combobox__option--current {
+  font-weight: 600;
+  color: var(--color-attacker);
+}
+
+.combobox__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.combobox__hint {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--color-text-meta);
+}
+
+.combobox__empty {
+  padding: 12px;
+  font-style: italic;
+  color: var(--color-text-meta);
+}
+
+/* — Узкий экран: список на весь экран — */
+
+@media (max-width: 600px) {
+  .combobox__trigger {
+    font-size: 15px; /* как у подписей параметров на мобильных */
+  }
+
+  .combobox__popup,
+  .combobox__popup--up {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    max-height: none;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .combobox__search {
+    height: 48px;
+    /* меньше 16px — и iOS увеличит страницу при фокусе в поле */
+    font-size: 16px;
+  }
+
+  .combobox__close {
+    display: flex;
+  }
+
+  .combobox__list {
+    --combobox-group-height: 32px;
+  }
+
+  /* палец крупнее курсора */
+  .combobox__option {
+    min-height: 44px;
+  }
+}

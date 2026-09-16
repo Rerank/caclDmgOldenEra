@@ -18,6 +18,8 @@ export const ru = {
   template: 'Шаблон',
   /** шаблон без существа; имена существ — в data/creatures.ts */
   customTemplate: 'Свой',
+  /** цифра в поиске ищет по рангу — подсказка об этом прямо в поле */
+  templateSearch: 'Имя или ранг (1–8)',
   hp: 'Здоровье',
   hpCurrent: 'Здоровье верхнего существа',
   hpMax: 'Максимальное здоровье существа',
@@ -45,6 +47,8 @@ export const ru = {
   unpin: 'Открепить',
   decrease: 'уменьшить',
   increase: 'увеличить',
+  close: 'Закрыть',
+  nothingFound: 'Ничего не найдено',
 
   // Результаты
   resultTitle: 'Итог',
