@@ -108,10 +108,13 @@ export function useCalculator() {
     },
 
     /**
-     * Открепить — значит вернуть панель туда, откуда её закрепили. Если место
-     * «Итога» свободно, она возвращается наверх: закрепил по ошибке — отменил.
-     * Если там уже стоит более свежий расчёт, возвращаться некуда, и панель
-     * уходит совсем.
+     * Открепить — значит убрать панель. Наверх, в «Итог», она возвращается
+     * только в одном случае: закрепил по ошибке и сразу передумал. Это видно
+     * по трём признакам сразу — панель единственная, место «Итога» свободно,
+     * а форма с момента расчёта не менялась.
+     *
+     * Иначе возвращать нечего: расчёт посчитан по другим числам и «Итогом»,
+     * то есть результатом для текущей формы, уже не является.
      */
     unpin: (id: string) => {
       if (leavingIds.includes(id)) return
@@ -119,7 +122,10 @@ export function useCalculator() {
       const entry = pinned.find((item) => item.id === id)
       if (!entry) return
 
-      if (fresh === null) {
+      const undoPin =
+        pinned.length === 1 && fresh === null && transitions.sameInput(input, entry.input)
+
+      if (undoPin) {
         setFresh(entry)
         setPinned((current) => current.filter((item) => item.id !== id))
         return

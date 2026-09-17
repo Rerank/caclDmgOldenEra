@@ -95,6 +95,25 @@ export function patchAttack(input: Input, patch: AttackPatch): Input {
   return unchanged ? input : { ...input, ...patch }
 }
 
+const sameSide = (a: Side, b: Side) =>
+  (Object.keys(a) as Array<keyof Side>).every((key) => a[key] === b[key])
+
+/**
+ * Совпадают ли входные данные по значению. Переходы возвращают новые объекты,
+ * поэтому сравнение ссылок здесь не годится: нужно сравнить поля.
+ *
+ * Перебираем ключи, а не перечисляем их: новое поле стороны попадёт в сравнение
+ * само, и о нём не забудут.
+ */
+export function sameInput(a: Input, b: Input): boolean {
+  return (
+    a.ranged === b.ranged &&
+    a.rangePenalty === b.rangePenalty &&
+    sameSide(a.attacker, b.attacker) &&
+    sameSide(a.defender, b.defender)
+  )
+}
+
 /**
  * Выбор шаблона. Подставляет свойства существа и делает стек целым: новое
  * существо ничем не ранено. Количество, герой и проценты остаются.

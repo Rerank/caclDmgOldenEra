@@ -2,7 +2,14 @@ import { describe, expect, test } from 'vitest'
 import { CREATURE_TEMPLATES, CUSTOM_TEMPLATE_ID, type CreatureTemplate } from '../data/creatures'
 import { DEFAULT_INPUT } from '../domain/rules'
 import type { Input, Side } from '../domain/types'
-import { patchAttack, patchSide, selectTemplate, swapSides, type SidePatch } from './transitions'
+import {
+  patchAttack,
+  patchSide,
+  sameInput,
+  selectTemplate,
+  swapSides,
+  type SidePatch,
+} from './transitions'
 
 /**
  * Существ берём из справочника по признаку, а ожидания — из самого шаблона:
@@ -121,6 +128,35 @@ describe('правка после выбора шаблона', () => {
 
   test('ввод того же значения — не правка', () => {
     expect(patchSide(chosen, 'defender', { attack: shooter.attack })).toBe(chosen)
+  })
+})
+
+describe('сравнение слепков', () => {
+  /** другое значение того же типа — чтобы «поменять» любое поле, не зная, какое оно */
+  const other = (value: Side[keyof Side]) => {
+    if (typeof value === 'number') return value + 1
+    if (typeof value === 'boolean') return !value
+    return `${value}-другое`
+  }
+
+  test('одинаковые данные совпадают, даже если это разные объекты', () => {
+    expect(sameInput(base, structuredClone(base))).toBe(true)
+  })
+
+  test('правка любого поля стороны делает слепки разными', () => {
+    for (const key of Object.keys(base.attacker) as Array<keyof Side>) {
+      const changed: Input = {
+        ...base,
+        attacker: { ...base.attacker, [key]: other(base.attacker[key]) } as Side,
+      }
+
+      expect(sameInput(base, changed), `поле ${key}`).toBe(false)
+    }
+  })
+
+  test('параметры удара тоже сравниваются', () => {
+    expect(sameInput(base, { ...base, ranged: !base.ranged })).toBe(false)
+    expect(sameInput(base, { ...base, rangePenalty: base.rangePenalty + 10 })).toBe(false)
   })
 })
 
