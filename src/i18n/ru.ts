@@ -4,7 +4,7 @@
  * а компоненты продолжат импортировать `t` из ./index.
  */
 export const ru = {
-  gameTitle: 'HoMM: Olden Era',
+  gameTitle: 'Heroes of Might and Magic: Olden Era',
   appTitle: 'Калькулятор входящего урона',
   /** слагаемые разделены « × »: по нему шапка разбивает формулу для переноса строк */
   headerFormula:

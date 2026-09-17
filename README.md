@@ -1,32 +1,40 @@
-# React + TypeScript + Vite
+# Калькулятор входящего урона
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+для **Heroes of Might and Magic: Olden Era**
 
-Currently, two official plugins are available:
+Считает, чем закончится обмен ударами между двумя отрядами: сколько урона нанесёт удар, сколько
+существ погибнет и что прилетит в ответ.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**[Открыть калькулятор →](https://rerank.github.io/caclDmgOldenEra/)**
 
-## React Compiler
+Работает в браузере — на компьютере и на телефоне, ничего устанавливать не нужно.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Зачем он нужен
 
-## Expanding the Oxlint configuration
+- **Какой бафф сильнее?** Накинуть на своё существо +15% к урону или снизить врагу защиту на 6?
+  Подставь оба варианта и сравни результат.
+- **Стоит ли атаковать большой стек?** Калькулятор заранее покажет, сколько существ враг убьёт
+  контрударом, — до того, как ты рискнёшь.
+- **Какое улучшение выбрать?** У одного больше урон, но меньше атака, у другого — наоборот.
+  Посчитай, кто из них на деле бьёт сильнее.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Что умеет
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+- **Шаблоны существ.** Выбери существо из списка — калькулятор заполнит панель его параметрами.
+  Шаблон только предзаполняет поля: уникальные способности существ не учитываются, а любое значение
+  можно поправить вручную.
+- **Поиск в списке шаблонов** — на русском или английском:
+  - по названию — просто введи текст: «дракон»;
+  - по рангу — введи цифру: «7»;
+  - по названию внутри ранга — цифра и через пробел текст: «7 дракон».
+- Учитывает бонусы героя, проценты к исходящему и входящему урону, штраф за дальность выстрела,
+  раненое существо в отряде и ослабленную контратаку стрелков.
+- Показывает минимум, максимум и среднее: полученный урон, погибших, выживших и остаток здоровья.
+- Закрепляет результаты, чтобы сравнить несколько вариантов рядом.
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Формулы основаны на [гайде по механике боя](https://paradrew.com/ru/olden-era/guides/pvp-combat-mechanics/)
+и сверены с реальными боями. Удача не учитывается.
+
+## Для разработчиков
+
+Как устроен проект, как запустить его у себя и доработать — в [DEVELOPMENT.md](DEVELOPMENT.md).
